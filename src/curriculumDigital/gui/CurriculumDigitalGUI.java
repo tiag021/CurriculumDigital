@@ -7,7 +7,10 @@ package curriculumDigital.gui;
 import curriculumDigital.core.CurriculumDigital;
 import curriculumDigital.core.Evento;
 import curriculumDigital.core.Utilizador;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -33,11 +36,32 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         jLabelNome.setText(u.getName());
 
         try {
-            curriculum = new CurriculumDigital();
             curriculum = CurriculumDigital.load(fileCurriculumDigital);
+
+            if (curriculum != null) {
+                List<Evento> userEvents = new ArrayList<>();
+                for (Evento evento : curriculum.getBlockchainEvents()) {
+                    if (evento.getUser().equals(myUser.getName())) {
+                        userEvents.add(evento);
+                    }
+                }
+
+                if (!userEvents.isEmpty()) {
+                    StringBuilder eventsDetails = new StringBuilder();
+                    for (Evento evento : userEvents) {
+                        eventsDetails.append(evento.toString()).append("\n");
+                    }
+                    txtCurriculum.setText(eventsDetails.toString());
+                } else {
+                    txtCurriculum.setText("Nenhum evento encontrado para " + myUser.getName() + ".");
+                }
+            } else {
+                txtCurriculum.setText("Nenhum currículo encontrado.");
+            }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao carregar o currículo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        txtCurriculum.setText(curriculum.toString());
     }
 
     /**
@@ -163,45 +187,29 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCurriculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCurriculoActionPerformed
-        /*  try {
-            List<Evento> eventos = curriculum.getBlockchainEvents(); // Retrieve blockchain events
+        try {
+            List<Evento> eventos = curriculum.getBlockchainEvents();
+            StringBuilder eventsDetails = new StringBuilder();
             for (Evento evento : eventos) {
-                String data = evento.toString(); // Assuming Evento has a suitable toString method
-
-                // Extract the name and check if it matches the entered name
-                String[] parts = data.split(","); // Assuming format "Nome: X, Evento: Y"
-                if (parts.length > 0) {
-                    String namePart = parts[0].trim(); // "Nome: X"
-                    String extractedName = namePart.replace("Nome: ", "").trim(); // Get just "X"
-
-                    // Compare the extracted name with the entered name
-                    if (extractedName.equalsIgnoreCase(nome)) { // Case-insensitive comparison
-                        txtCurriculum.append("Currículo encontrado:\n" + data + "\n\n");
-                        found = true; // Set found flag to true
-                    }
-                }
-            }
-            // If no matches were found, display the appropriate message
-            if (!found) {
-                txtCurriculum.append("Currículo não encontrado!\n");
+                // Append the string representation of the event
+                eventsDetails.append(evento.toString()).append("\n");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao buscar eventos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }*/
+        }
     }//GEN-LAST:event_btnCurriculoActionPerformed
 
     private void btnRegistarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistarActionPerformed
         try {
             String[] eventosArray = txtEventos.getText().split("\\n");
 
-            // Verifica se o nome e os eventos são válidos
+            // Verifica se os eventos são válidos
             if (eventosArray.length > 0) {
                 String eventosConcatenados = String.join(", ", eventosArray);
-
                 Evento evento = new Evento(eventosConcatenados, myUser);
 
-                CurriculumDigital curriculum = new CurriculumDigital();
                 curriculum.addEvent(evento);
+                //Erro aqui
                 curriculum.save(fileCurriculumDigital);
 
                 JOptionPane.showMessageDialog(null, "Currículo registrado com sucesso!");
@@ -214,30 +222,57 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegistarActionPerformed
 
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
-        /*  StringBuilder curriculumsList = new StringBuilder();
+        try {
+            List<Evento> eventos = curriculum.getBlockchainEvents();
 
-        // Supondo que getCurriculums() retorna a lista de blocos da blockchain
-        for (Block bloco : getCurriculums()) {
-            String data = bloco.toString();
+            // Create a list to hold user names
+            List<String> userNames = new ArrayList<>();
 
-            String[] parts = data.split(","); // ["Nome: nome", " Evento: evento"]
-
-            // Extrair o nome do currículo
-            String namePart = parts[0].trim();
-            String name = namePart.replace("Nome: ", "");
-
-            // Extrair e formatar eventos
-            StringBuilder eventosConcatenados = new StringBuilder("Eventos: ");
-            for (int i = 1; i < parts.length; i++) {
-                String eventoPart = parts[i].trim();
-                eventosConcatenados.append(eventoPart.replace("Evento: ", "") + (i < parts.length - 1 ? ", " : ""));
+            // Extract user names from eventos
+            for (Evento evento : eventos) {
+                String nome = evento.getUser(); // Assuming getUser() returns the name directly
+                if (!userNames.contains(nome)) { // Avoid duplicates
+                    userNames.add(nome);
+                }
             }
 
-            // Adicionar à lista final
-            curriculumsList.append(name + " - " + eventosConcatenados + "\n");
-        }
+            // Convert userNames list to an array
+            String[] namesArray = userNames.toArray(new String[0]);
 
-        txtCurriculum.setText(curriculumsList.toString());*/
+            // Show the names in a popup dialog
+            String selectedName = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Selecione um utilizador:",
+                    "Lista de Utilizadores",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    namesArray,
+                    namesArray[0] // Default selection
+            );
+
+            // Check if a name was selected
+            if (selectedName != null) {
+                // Collect events for the selected user
+                StringBuilder eventsDetails = new StringBuilder();
+                for (Evento evento : eventos) {
+                    if (evento.getUser().equals(selectedName)) {
+                        // Append the string representation of the event
+                        eventsDetails.append(evento.toString()).append("\n");
+                    }
+                }
+
+                // Show the events in a dialog
+                if (eventsDetails.length() > 0) {
+                    JOptionPane.showMessageDialog(this, eventsDetails.toString(),
+                            "Eventos de " + selectedName, JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum evento encontrado para " + selectedName,
+                            "Eventos", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(CurriculumDigitalGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnListarActionPerformed
 
     private void btnAcercaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcercaActionPerformed
