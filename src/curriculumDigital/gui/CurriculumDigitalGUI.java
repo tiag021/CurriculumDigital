@@ -7,6 +7,7 @@ package curriculumDigital.gui;
 import curriculumDigital.core.CurriculumDigital;
 import curriculumDigital.core.Evento;
 import curriculumDigital.core.Utilizador;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -36,27 +37,25 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         jLabelNome.setText(u.getName());
 
         try {
+            curriculum = new CurriculumDigital();
             curriculum = CurriculumDigital.load(fileCurriculumDigital);
 
-            if (curriculum != null) {
-                List<Evento> userEvents = new ArrayList<>();
-                for (Evento evento : curriculum.getBlockchainEvents()) {
-                    if (evento.getUser().equals(myUser.getName())) {
-                        userEvents.add(evento);
-                    }
-                }
+            List<Evento> userEvents = new ArrayList<>();
 
-                if (!userEvents.isEmpty()) {
-                    StringBuilder eventsDetails = new StringBuilder();
-                    for (Evento evento : userEvents) {
-                        eventsDetails.append(evento.toString()).append("\n");
-                    }
-                    txtCurriculum.setText(eventsDetails.toString());
-                } else {
-                    txtCurriculum.setText("Nenhum evento encontrado para " + myUser.getName() + ".");
+            for (Evento evento : curriculum.getBlockchainEvents()) {
+                if (evento.getUser().equals(myUser.getName())) {
+                    userEvents.add(evento);
                 }
+            }
+
+            if (!userEvents.isEmpty()) {
+                StringBuilder eventsDetails = new StringBuilder();
+                for (Evento evento : userEvents) {
+                    eventsDetails.append(evento.toString()).append("\n");
+                }
+                txtCurriculum.setText(eventsDetails.toString());
             } else {
-                txtCurriculum.setText("Nenhum currículo encontrado.");
+                txtCurriculum.setText("Nenhum evento encontrado para " + myUser.getName() + ".");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -188,11 +187,22 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
 
     private void btnCurriculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCurriculoActionPerformed
         try {
-            List<Evento> eventos = curriculum.getBlockchainEvents();
-            StringBuilder eventsDetails = new StringBuilder();
-            for (Evento evento : eventos) {
-                // Append the string representation of the event
-                eventsDetails.append(evento.toString()).append("\n");
+            List<Evento> userEvents = new ArrayList<>();
+
+            for (Evento evento : curriculum.getBlockchainEvents()) {
+                if (evento.getUser().equals(myUser.getName())) {
+                    userEvents.add(evento);
+                }
+            }
+
+            if (!userEvents.isEmpty()) {
+                StringBuilder eventsDetails = new StringBuilder();
+                for (Evento evento : userEvents) {
+                    eventsDetails.append(evento.toString()).append("\n");
+                }
+                txtCurriculum.setText(eventsDetails.toString());
+            } else {
+                txtCurriculum.setText("Nenhum evento encontrado para " + myUser.getName() + ".");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao buscar eventos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -209,7 +219,6 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
                 Evento evento = new Evento(eventosConcatenados, myUser);
 
                 curriculum.addEvent(evento);
-                //Erro aqui
                 curriculum.save(fileCurriculumDigital);
 
                 JOptionPane.showMessageDialog(null, "Currículo registrado com sucesso!");
