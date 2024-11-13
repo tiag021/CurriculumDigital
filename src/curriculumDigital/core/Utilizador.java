@@ -36,6 +36,10 @@ public class Utilizador {
     private PrivateKey priv;
     private Key sim;
 
+    /**
+     *
+     * @param name
+     */
     public Utilizador(String name) {
         this.name = name;
         this.pub = null;
@@ -43,6 +47,10 @@ public class Utilizador {
         this.sim = null;
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public Utilizador() throws Exception {
         this.name = "noName";
         this.pub = null;
@@ -50,6 +58,10 @@ public class Utilizador {
         this.sim = null;
     }
 
+    /**
+     * 
+     * @throws Exception Gera chaves simétrica, pública e privada
+     */
     public void generateKeys() throws Exception {
         this.sim = SecurityUtils.generateAESKey(256);
         KeyPair kp = SecurityUtils.generateECKeyPair(256);
@@ -57,6 +69,11 @@ public class Utilizador {
         this.priv = kp.getPrivate();
     }
 
+    /**
+     * 
+     * @param password Guarda a password e encripta-a
+     * @throws Exception 
+     */
     public void save(String password) throws Exception {
         //encriptar a chave privada
         byte[] secret = SecurityUtils.encrypt(priv.getEncoded(), password);
@@ -68,6 +85,11 @@ public class Utilizador {
         Files.write(Path.of(this.name + ".pub"), pub.getEncoded());
     }
 
+    /**
+     * 
+     * @param password Lê a password inserida e verifica-a de acordo com a que está encriptada
+     * @throws Exception 
+     */
     public void load(String password) throws Exception {
         //desencriptar a privada
         byte[] privData = Files.readAllBytes(Path.of(this.name + ".priv"));
@@ -82,40 +104,76 @@ public class Utilizador {
         this.sim = SecurityUtils.getAESKey(simData);
     }
 
+    /**
+     * 
+     * @throws Exception Carrega a chave pública
+     */
     public void loadPublic() throws Exception {
         //ler a publica
         byte[] pubData = Files.readAllBytes(Path.of(this.name + ".pub"));
         this.pub = SecurityUtils.getPublicKey(pubData);
     }
 
+    /**
+     * 
+     * @return Retorna o nome do utilizador 
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @param name Define o nome do utilizador
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 
+     * @return Retorna a chave pública 
+     */
     public PublicKey getPub() {
         return pub;
     }
 
+    /**
+     * 
+     * @param pub Define a chave pública 
+     */
     public void setPub(PublicKey pub) {
         this.pub = pub;
     }
 
+    /**
+     * 
+     * @return Retorna a chave privada 
+     */
     public PrivateKey getPriv() {
         return priv;
     }
 
+    /**
+     * 
+     * @param priv Define a chave privada 
+     */
     public void setPriv(PrivateKey priv) {
         this.priv = priv;
     }
 
+    /**
+     * 
+     * @return Retorna a chave simétrica 
+     */
     public Key getSim() {
         return sim;
     }
 
+    /**
+     * 
+     * @param sim Define a chave simétrica 
+     */
     public void setSim(Key sim) {
         this.sim = sim;
     }

@@ -23,8 +23,18 @@ package blockchain.utils;
  */
 public class Miner {
     //maximum number of Nonce
+
+    /**
+     *
+     */
     public static int MAX_NONCE = (int)1E9;
 
+    /**
+     *
+     * @param data
+     * @param dificulty
+     * @return
+     */
     public static int getNonce(String data, int dificulty) {
         //String of zeros
         String zeros = String.format("%0" + dificulty + "d", 0);

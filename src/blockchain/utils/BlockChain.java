@@ -61,10 +61,19 @@ public class BlockChain implements Serializable {
         chain.add(newBlock);
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public Block get(int index) {
         return chain.get(index);
     }
 
+    /**
+     *
+     * @return
+     */
     public String toString() {
         StringBuilder txt = new StringBuilder();
         txt.append("Blochain size = " + chain.size() + "\n");
@@ -73,22 +82,41 @@ public class BlockChain implements Serializable {
         }
         return txt.toString();
     }
+
+    /**
+     *
+     * @return
+     */
     public List<Block> getChain() {
        return chain;
     }
 
+    /**
+     *
+     * @param fileName
+     * @throws Exception
+     */
     public void save(String fileName) throws Exception {
         try ( ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
             out.writeObject(chain);
         }
     }
 
+    /**
+     *
+     * @param fileName
+     * @throws Exception
+     */
     public void load(String fileName) throws Exception {
         try ( ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
             this.chain = (ArrayList<Block>) in.readObject();
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isValid() {
         //Validate blocks
         for (Block block : chain) {

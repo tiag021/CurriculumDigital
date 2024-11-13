@@ -11,7 +11,7 @@ package curriculumDigital.gui;
 public class BemVindo extends javax.swing.JFrame {
 
     /**
-     * Creates new form Welcome
+     *
      */
     public BemVindo() {
         initComponents();

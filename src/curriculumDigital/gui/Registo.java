@@ -14,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import blockchain.utils.SecurityUtils;
 import curriculumDigital.core.Utilizador;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -27,6 +28,9 @@ public class Registo extends javax.swing.JFrame {
     KeyPair keyPairSign = null;
     JFileChooser fileChooser = new JFileChooser(new File("."));
 
+    /**
+     *
+     */
     public Registo() {
         initComponents();
     }
@@ -118,37 +122,65 @@ public class Registo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Botão Registar
     private void jButtonRegistarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegistarActionPerformed
         try {
             // Verificar se o campo do email está preenchido
-            if (jTextFieldEmail.getText().isEmpty()) {
+            String email = jTextFieldEmail.getText();
+            // Se estiver vazio ou inválida mostra mensagem de erro
+            if (email.isEmpty() || !isValidEmail(email)) {
                 JOptionPane.showMessageDialog(this, "Email inválido", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
                 // Criar utilizador
-                Utilizador u = new Utilizador(jTextFieldEmail.getText());
+                Utilizador u = new Utilizador(email);
                 u.generateKeys();
 
                 // Verificar se as passwords coincidem
                 boolean passwordsMatch = Arrays.equals(jPasswordField.getPassword(), jConfirmPasswordField.getPassword());
-
                 if (!passwordsMatch) {
                     JOptionPane.showMessageDialog(this, "As passwords não são iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else if (!isStrongPassword(new String(jPasswordField.getPassword()))) {
+                    JOptionPane.showMessageDialog(this, "A password deve ter pelo menos 8 caracteres, incluindo letras e números.", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
                     u.save(new String(jPasswordField.getPassword()));
                     JOptionPane.showMessageDialog(this, "Utilizador Criado");
-                    new CurriculumDigitalGUI(u).setVisible(true);
-                    this.dispose();
+
+                    SwingUtilities.invokeLater(() -> {
+                        new CurriculumDigitalGUI(u).setVisible(true);
+                        this.dispose();
+                    });
                 }
             }
         } catch (Exception ex) {
             Logger.getLogger(Registo.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao criar utilizador: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+
         }    }//GEN-LAST:event_jButtonRegistarActionPerformed
 
+    // Botão voltar
     private void jButtonVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVoltarActionPerformed
         new BemVindo().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButtonVoltarActionPerformed
+
+    /**
+     * 
+     * @param email Inserir o email para ser validado
+     * @return Retorna true se o email estiver de acordo com os critérios
+     */
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return email.matches(emailRegex);
+    }
+
+    /**
+     * 
+     * @param password Inserir a password para ser validada
+     * @return Retorna true se a password estiver de acordo com os critérios
+     */
+    private boolean isStrongPassword(String password) {
+        return password.length() >= 8 && password.matches(".*[A-Za-z].*") && password.matches(".*[0-9].*");
+    }
 
     /**
      * @param args the command line arguments
@@ -164,16 +196,24 @@ public class Registo extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Registo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registo.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Registo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registo.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Registo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registo.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Registo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Registo.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>

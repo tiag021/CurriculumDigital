@@ -20,10 +20,16 @@ import javax.swing.JOptionPane;
  */
 public class CurriculumDigitalGUI extends javax.swing.JFrame {
 
+    /**
+     *
+     */
     public static String fileCurriculumDigital = "curriculumDigital.obj";
     CurriculumDigital curriculum;
     Utilizador myUser = null;
 
+    /**
+     *
+     */
     public CurriculumDigitalGUI() {
         initComponents();
 
@@ -31,6 +37,10 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     *
+     * @param u
+     */
     public CurriculumDigitalGUI(Utilizador u) {
         this();
         this.myUser = u;
@@ -185,6 +195,7 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Botão mostrar currículo
     private void btnCurriculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCurriculoActionPerformed
         try {
             List<Evento> userEvents = new ArrayList<>();
@@ -209,6 +220,7 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCurriculoActionPerformed
 
+    // Botão Registar
     private void btnRegistarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistarActionPerformed
         try {
             String[] eventosArray = txtEventos.getText().split("\\n");
@@ -230,25 +242,25 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRegistarActionPerformed
 
+    // Botão Listar
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
         try {
             List<Evento> eventos = curriculum.getBlockchainEvents();
 
-            // Create a list to hold user names
             List<String> userNames = new ArrayList<>();
 
-            // Extract user names from eventos
+            // Extrair o userName a partir dos eventos
             for (Evento evento : eventos) {
-                String nome = evento.getUser(); // Assuming getUser() returns the name directly
-                if (!userNames.contains(nome)) { // Avoid duplicates
+                String nome = evento.getUser();
+                // Prevenir duplicados
+                if (!userNames.contains(nome)) { 
                     userNames.add(nome);
                 }
             }
 
-            // Convert userNames list to an array
             String[] namesArray = userNames.toArray(new String[0]);
 
-            // Show the names in a popup dialog
+            // Mostrar os nomes num popup
             String selectedName = (String) JOptionPane.showInputDialog(
                     null,
                     "Selecione um utilizador:",
@@ -259,18 +271,16 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
                     namesArray[0] // Default selection
             );
 
-            // Check if a name was selected
+            // Verifica se um userName foi selecionado
             if (selectedName != null) {
-                // Collect events for the selected user
+                // Obtenção dos eventos desse userName
                 StringBuilder eventsDetails = new StringBuilder();
                 for (Evento evento : eventos) {
                     if (evento.getUser().equals(selectedName)) {
-                        // Append the string representation of the event
                         eventsDetails.append(evento.toString()).append("\n");
                     }
                 }
 
-                // Show the events in a dialog
                 if (eventsDetails.length() > 0) {
                     JOptionPane.showMessageDialog(this, eventsDetails.toString(),
                             "Eventos de " + selectedName, JOptionPane.INFORMATION_MESSAGE);
@@ -284,6 +294,7 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnListarActionPerformed
 
+    // Botão Acerca de
     private void btnAcercaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcercaActionPerformed
         JOptionPane.showMessageDialog(this,
                 "Alunos do Grupo:\n- Tiago Fernandes, nº22102\n- Tiago Carvalho, nº23024",

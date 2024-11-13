@@ -278,6 +278,12 @@ public class SecurityUtils {
         Files.write(Paths.get(normalizeKeyFileName(key, file)), key.getEncoded());
     }
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public static PrivateKey loadPrivateKey(String file) throws IOException {
         //remove extension
         if (file.contains(".")) {
@@ -286,6 +292,12 @@ public class SecurityUtils {
         return (PrivateKey) loadKey(file + "." + PRIVATE_KEY_EXTENSION_FILE);
     }
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public static PublicKey loadPublicKey(String file) throws IOException {
         //remove extension
         if (file.contains(".")) {
@@ -294,6 +306,12 @@ public class SecurityUtils {
         return (PublicKey) loadKey(file + "." + PUBLIC_KEY_EXTENSION_FILE);
     }
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public static SecretKey loadAESKey(String file) throws IOException {
         //remove extension
         if (file.contains(".")) {
@@ -351,6 +369,7 @@ public class SecurityUtils {
      * @param data dados a serem desencriptados
      * @param key chave a ser utilizada na desencriptação
      * @return os dados encriptados em um array de dados
+     * @throws java.lang.Exception
      *
      */
     public static byte[] decrypt(byte[] data, Key key) throws Exception {
@@ -399,6 +418,11 @@ public class SecurityUtils {
         return cipher;
     }
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         byte[] secret = encrypt("Ola".getBytes(), "pass");
         byte[] plain = decrypt(secret, "pass");
@@ -480,6 +504,14 @@ public class SecurityUtils {
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::      I N T E G R I T Y         :::::::::::::::::::::::::::::::::    
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @param data
+     * @param algorithm
+     * @return
+     * @throws Exception
+     */
     public static byte[] calculateHash(byte[] data, String algorithm)
             throws Exception {
         MessageDigest md = MessageDigest.getInstance(algorithm);
@@ -487,6 +519,14 @@ public class SecurityUtils {
         return md.digest();
     }
 
+    /**
+     *
+     * @param data
+     * @param hash
+     * @param algorithm
+     * @return
+     * @throws Exception
+     */
     public static boolean verifyHash(byte[] data, byte[] hash, String algorithm) throws Exception {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         md.update(data);

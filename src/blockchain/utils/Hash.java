@@ -23,10 +23,20 @@ package blockchain.utils;
  */
 public class Hash {
 
+    /**
+     *
+     * @param n
+     * @return
+     */
     public static String toHexString(int n) {
         return Integer.toHexString(n).toUpperCase();
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     public static String getHash(String data) {
         return toHexString(Math.abs(data.hashCode()));
     }

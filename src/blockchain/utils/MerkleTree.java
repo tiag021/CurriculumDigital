@@ -192,6 +192,13 @@ public final class MerkleTree implements Serializable {
         return isProofValid(currentHash, proof, 0);
     }
 
+    /**
+     *
+     * @param currentHash
+     * @param proof
+     * @param indexOfList
+     * @return
+     */
     public static boolean isProofValid(String currentHash, List<String> proof, int indexOfList) {
         //top of the tree
         if (indexOfList == proof.size()-1) {
@@ -248,11 +255,20 @@ public final class MerkleTree implements Serializable {
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::::::::::::::::::::  T O   S T R I N G        ::::::::::::::::
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return toTree();
     }
 
+    /**
+     *
+     * @return
+     */
     public String toTree() {
         //calculate maxSize of elementos in chars
         int SIZE = 9; // minimum size
@@ -294,12 +310,27 @@ public final class MerkleTree implements Serializable {
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //:::::::::::::::::::::::::::   S A V E   /    L O A D      ::::::::::::::::
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @param fileName
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void saveToFile(String fileName) throws FileNotFoundException, IOException {
         try ( ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
             out.writeObject(this);
         }
     }
 
+    /**
+     *
+     * @param fileName
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static MerkleTree loadFromFile(String fileName) throws FileNotFoundException, IOException, ClassNotFoundException {
         try ( ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
             return (MerkleTree) in.readObject();
@@ -310,6 +341,11 @@ public final class MerkleTree implements Serializable {
     //::::::          E N C A P S U L A M E N T O                      :::::::::
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @return
+     */
     public List<List<String>> getHashTree() {
         return hashTree;
     }
@@ -341,6 +377,13 @@ public final class MerkleTree implements Serializable {
     //::::::                         U T I L S                         :::::::::
     //::::::                                                           :::::::::
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @param text
+     * @param len
+     * @return
+     */
     public static String centerString(String text, int len) {
         String out = String.format("%" + len + "s%s%" + len + "s", "", text, "");
         float mid = (out.length() / 2);
@@ -349,6 +392,11 @@ public final class MerkleTree implements Serializable {
         return out.substring((int) start, (int) end);
     }
 
+    /**
+     *
+     * @param i
+     * @return
+     */
     public static String intToHex(int i) {
         return Integer.toString(i, 16).toUpperCase();
     }

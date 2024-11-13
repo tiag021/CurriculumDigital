@@ -101,16 +101,21 @@ public class Entrar extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Botão voltar
     private void jButtonVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVoltarActionPerformed
         BemVindo frameBemVindo = new BemVindo();
         frameBemVindo.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButtonVoltarActionPerformed
 
+    //Botão Entrar
     private void jButtonEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEntrarActionPerformed
         try {
+            // Cria um objeto do tipo Utilizador com o nome fornecido
             Utilizador u = new Utilizador(jTextFieldEmail.getText());
+            // Verifica a password inserida com a encriptada
             u.load(new String(jPasswordField.getPassword()));
+            // Caso o utilizador efetue um login bem sucedido, entra na GUI principal, passando o utilizador como parâmetro
             new CurriculumDigitalGUI(u).setVisible(true);
             this.dispose();
         } catch (Exception ex) {

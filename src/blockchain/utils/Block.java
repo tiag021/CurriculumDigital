@@ -32,6 +32,12 @@ public class Block implements Serializable {
     int nonce;           // proof of work 
     String currentHash;  // Hash of block
 
+    /**
+     *
+     * @param previousHash
+     * @param data
+     * @param nonce
+     */
     public Block(String previousHash, String data, int nonce) {
         this.previousHash = previousHash;
         this.data = data;
@@ -39,28 +45,50 @@ public class Block implements Serializable {
         this.currentHash = calculateHash();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getData() {
         return data;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPreviousHash() {
         return previousHash;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getNonce() {
         return nonce;
     }
     
-    
-
+    /**
+     *
+     * @return
+     */
     public String calculateHash() {
         return Hash.getHash(nonce + previousHash + data);
     }
     
+    /**
+     *
+     * @return
+     */
     public String getCurrentHash(){
         return currentHash;
     }
 
+    /**
+     *
+     * @return
+     */
     public String toString() {
         return // (isValid() ? "OK\t" : "ERROR\t")+
                  String.format("[ %8s", previousHash) + " <- " + 
@@ -69,6 +97,10 @@ public class Block implements Serializable {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isValid() {
         return currentHash.equals(calculateHash());
     }

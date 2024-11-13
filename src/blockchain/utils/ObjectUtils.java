@@ -29,6 +29,11 @@ import java.util.Base64;
  */
 public class ObjectUtils {
 
+    /**
+     *
+     * @param base64String
+     * @return
+     */
     public static Object convertBase64ToObject(String base64String) {
         try {
             // Decodifica a string Base64 em bytes
@@ -46,7 +51,14 @@ public class ObjectUtils {
 
     }
 
+    /**
+     *
+     * @param object
+     * @return
+     * @throws Exception
+     */
     public static String convertObjectToBase64(Serializable object) throws Exception {
+try {
         // Serializa o objeto em bytes
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
@@ -55,6 +67,11 @@ public class ObjectUtils {
 
         // Converte os bytes em Base64
         return Base64.getEncoder().encodeToString(byteStream.toByteArray());
+    } catch (Exception e) {
+        // Print the error message to the console
+        System.out.println("Error converting object to Base64: " + e.getMessage());
+        e.printStackTrace(); // Optional: Print the stack trace for more details
+        throw e; // Re-throw the exception after logging
     }
-
+    }
 }

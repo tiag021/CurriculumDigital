@@ -6,21 +6,36 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 
+/**
+ *
+ * @author almei
+ */
 public class Evento implements Serializable {
 
     private String eventName;
-    private Utilizador user;
+    private String user;
     private String userPub;
     private String signature;
 
-    // Construtor para criar um evento a partir de uma string e um utilizador
+
+    /**
+     * 
+     * @param eventName Nome do evento
+     * @param user Utilizador
+     * @throws Exception 
+     */
     public Evento(String eventName, Utilizador user) throws Exception {
         this.eventName = eventName;
-        this.user = user;
+        this.user = user.getName();
         this.userPub = Base64.getEncoder().encodeToString(user.getPub().getEncoded());
         sign(user.getPriv());
     }
 
+    /**
+     * 
+     * @param priv Assina o evento com a chave privada, publica e o nome do evento
+     * @throws Exception 
+     */
     public void sign(PrivateKey priv) throws Exception {
         byte[] dataSign = SecurityUtils.sign(
                 (userPub + eventName).getBytes(),
@@ -28,6 +43,10 @@ public class Evento implements Serializable {
         this.signature = Base64.getEncoder().encodeToString(dataSign);
     }
 
+    /**
+     * 
+     * @return Verifica se o evento é válido
+     */
     public boolean isValid() {
         try {
             PublicKey pub = SecurityUtils.getPublicKey(Base64.getDecoder().decode(userPub));
@@ -39,41 +58,80 @@ public class Evento implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @return Retorna o nome do evento
+     */
     public String getEventName() {
         return eventName;
     }
-
+    
+    /**
+     * 
+     * @param eventName Define o nome do evento
+     */
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
 
-    public Utilizador getUser() {
+    /**
+     * 
+     * @return Retorna o utilizador 
+     */
+    public String getUser() {
         return user;
     }
 
-    public void setUser(Utilizador user) {
+    /**
+     * 
+     * @param user Define o utilizador através do nome fornecido numa string 
+     */
+    public void setUser(String user) {
         this.user = user;
     }
 
+    /**
+     * 
+     * @return Retorna a assinatura
+     */
     public String getSignature() {
         return signature;
     }
 
+    /**
+     * 
+     * @param signature Define a assinatura
+     */
     public void setSignature(String signature) {
         this.signature = signature;
     }
 
+    /**
+     * 
+     * @return Retorna a chave pública do utilizador 
+     */
     public String getUserPub() {
         return userPub;
     }
 
+    /**
+     * 
+     * @param userPub Define a chave pública do utilizador
+     */
     public void setUserPub(String userPub) {
         this.userPub = userPub;
     }
 
+    /**
+     * 
+     * @return Formata os dados do evento para "NomeUser: eventos" e retorna 
+     */
     @Override
     public String toString() {
-        return String.format("Evento: %s, Registado por: %s, Assinatura válida: %b", eventName, user != null ? user.getName() : "Desconhecido", isValid());
+        //return String.format("%-10s -> %s", user, eventName);
+        return user + ": " + eventName;
     }
+
+    private static final long serialVersionUID = 202208224663L;
 
 }
