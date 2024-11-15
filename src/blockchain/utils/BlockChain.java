@@ -35,6 +35,7 @@ public class BlockChain implements Serializable {
 
     /**
      * gets the last block hash of the chain
+     *
      * @return last hash in the chain
      */
     public String getLastBlockHash() {
@@ -45,16 +46,37 @@ public class BlockChain implements Serializable {
         //hash of the last in the list
         return chain.get(chain.size() - 1).currentHash;
     }
+
     /**
      * adds data to the blockChain
+     *
      * @param data data to add in the block
      * @param dificulty dificulty of block to miners (POW)
+     * @param merkleRoot MerkleTree root for aditional integrity and security
      */
-    public void add(String data, int dificulty, String merkleRoot) {
+    public void add(String data, int dificulty, String merkleRoot) throws InterruptedException {
         //hash of previous block
         String prevHash = getLastBlockHash();
         //mining block
-        int nonce = Miner.getNonce(prevHash + data, dificulty);
+        int cores = Runtime.getRuntime().availableProcessors();
+        int max_nonce = (int) 1E9;
+        int nonce = 0;
+        
+        Miner[] miner = new Miner[cores];
+
+        for (int i = 0; i < cores; i++) {
+            int ini = i * (max_nonce / cores);
+            int fin = ini + (max_nonce / cores);
+            miner[i] = new Miner(prevHash + data, dificulty, ini, fin, max_nonce);
+            miner[i].start();
+        }
+
+        // Wait for all miners to finish
+        for (int i = 0; i < cores; i++) {
+            miner[i].join(); // Aguarda a conclusão de cada minerador
+            miner[i].nonceFound = nonce;
+        }
+        
         //build new block
         Block newBlock = new Block(prevHash, data, nonce, merkleRoot);
         //add new block to the chain
@@ -88,7 +110,7 @@ public class BlockChain implements Serializable {
      * @return
      */
     public List<Block> getChain() {
-       return chain;
+        return chain;
     }
 
     /**
@@ -97,7 +119,7 @@ public class BlockChain implements Serializable {
      * @throws Exception
      */
     public void save(String fileName) throws Exception {
-        try ( ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
             out.writeObject(chain);
         }
     }
@@ -108,7 +130,7 @@ public class BlockChain implements Serializable {
      * @throws Exception
      */
     public void load(String fileName) throws Exception {
-        try ( ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
             this.chain = (ArrayList<Block>) in.readObject();
         }
     }

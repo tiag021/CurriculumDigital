@@ -21,13 +21,47 @@ package blockchain.utils;
  * @author IPT - computer
  * @version 1.0
  */
-public class Miner {
-    //maximum number of Nonce
+public class Miner extends Thread {
 
-    /**
-     *
-     */
-    public static int MAX_NONCE = (int)1E9;
+    public int max_nonce;
+    public String data;
+    public int difficulty;
+    public int nonce, nonceFound;
+    public int ini, fin;
+
+    private static volatile boolean found = false;
+
+    public Miner(String data, int difficulty, int ini, int fin, int max_nonce) {
+        this.data = data;
+        this.difficulty = difficulty;
+        this.ini = ini;
+        this.fin = fin;
+        this.max_nonce = max_nonce;
+    }
+
+    public void run() {
+        //String of zeros
+        String zeros = String.format("%0" + difficulty + "d", 0);
+        //starting nonce
+        int nonce = 0;
+        while (nonce < max_nonce) {
+            //calculate hash of block
+            String hash = Hash.getHash(nonce + data);
+            //Nounce found
+            if (hash.endsWith(zeros)) {
+                nonceFound = nonce;
+                found = true;
+                break;
+            }
+            // Verify if another thread found the nonce alredy, using the shared boolean "found"
+            if (found == true) {
+                interrupt();
+                break;
+            }
+            //next nounce
+            nonce++;
+        }
+    }
 
     /**
      *
@@ -35,25 +69,6 @@ public class Miner {
      * @param dificulty
      * @return
      */
-    public static int getNonce(String data, int dificulty) {
-        //String of zeros
-        String zeros = String.format("%0" + dificulty + "d", 0);
-       //starting nonce
-        int nonce = 0;
-        while (nonce < MAX_NONCE) {
-            //calculate hash of block
-            String hash = Hash.getHash(nonce + data);
-            //DEBUG .... DEBUG .... DEBUG .... DEBUG .... DEBUG .... DEBUG
-            //System.out.println(nonce + " " + hash);
-            //Nounce found
-            if (hash.endsWith(zeros)) {
-                return nonce;
-            }
-            //next nounce
-            nonce++;
-        }
-        return nonce;
-    }
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     private static final long serialVersionUID = 202209281113L;
     //:::::::::::::::::::::::::::  Copyright(c) M@nso  2022  :::::::::::::::::::
