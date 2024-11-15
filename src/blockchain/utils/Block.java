@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 /**
  * Created on 22/08/2022, 09:23:49
- * 
+ *
  * Block with consensus of Proof of Work
  *
  * @author IPT - computer
@@ -31,6 +31,7 @@ public class Block implements Serializable {
     String data;         // data in the block
     int nonce;           // proof of work 
     String currentHash;  // Hash of block
+    String merkleRoot;
 
     /**
      *
@@ -38,11 +39,12 @@ public class Block implements Serializable {
      * @param data
      * @param nonce
      */
-    public Block(String previousHash, String data, int nonce) {
+    public Block(String previousHash, String data, int nonce, String merkleRoot) {
         this.previousHash = previousHash;
         this.data = data;
         this.nonce = nonce;
         this.currentHash = calculateHash();
+        this.merkleRoot = merkleRoot;
     }
 
     /**
@@ -51,6 +53,10 @@ public class Block implements Serializable {
      */
     public String getData() {
         return data;
+    }
+
+    public String getMerkleRoot() {
+        return merkleRoot;
     }
 
     /**
@@ -68,7 +74,7 @@ public class Block implements Serializable {
     public int getNonce() {
         return nonce;
     }
-    
+
     /**
      *
      * @return
@@ -76,12 +82,12 @@ public class Block implements Serializable {
     public String calculateHash() {
         return Hash.getHash(nonce + previousHash + data);
     }
-    
+
     /**
      *
      * @return
      */
-    public String getCurrentHash(){
+    public String getCurrentHash() {
         return currentHash;
     }
 
@@ -91,9 +97,9 @@ public class Block implements Serializable {
      */
     public String toString() {
         return // (isValid() ? "OK\t" : "ERROR\t")+
-                 String.format("[ %8s", previousHash) + " <- " + 
-                   String.format("%-10s", data) +  String.format(" %7d ] = ", nonce) + 
-                String.format("%8s",currentHash);
+                String.format("[ %8s", previousHash) + " <- "
+                + String.format("%-10s", data) + String.format(" %7d ] = ", nonce)
+                + String.format("%8s", currentHash);
 
     }
 

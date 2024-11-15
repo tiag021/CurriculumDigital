@@ -4,6 +4,7 @@
  */
 package curriculumDigital.gui;
 
+import blockchain.utils.MerkleTree;
 import curriculumDigital.core.CurriculumDigital;
 import curriculumDigital.core.Evento;
 import curriculumDigital.core.Utilizador;
@@ -209,6 +210,8 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
             if (!userEvents.isEmpty()) {
                 StringBuilder eventsDetails = new StringBuilder();
                 for (Evento evento : userEvents) {
+                    MerkleTree mt = new MerkleTree();
+
                     eventsDetails.append(evento.toString()).append("\n");
                 }
                 txtCurriculum.setText(eventsDetails.toString());
@@ -224,13 +227,14 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
     private void btnRegistarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistarActionPerformed
         try {
             String[] eventosArray = txtEventos.getText().split("\\n");
+            MerkleTree mt = new MerkleTree(eventosArray);
 
             // Verifica se os eventos são válidos
             if (eventosArray.length > 0) {
                 String eventosConcatenados = String.join(", ", eventosArray);
                 Evento evento = new Evento(eventosConcatenados, myUser);
 
-                curriculum.addEvent(evento);
+                curriculum.addEvent(evento, mt.getRoot());
                 curriculum.save(fileCurriculumDigital);
 
                 JOptionPane.showMessageDialog(null, "Currículo registrado com sucesso!");
@@ -253,7 +257,7 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
             for (Evento evento : eventos) {
                 String nome = evento.getUser();
                 // Prevenir duplicados
-                if (!userNames.contains(nome)) { 
+                if (!userNames.contains(nome)) {
                     userNames.add(nome);
                 }
             }

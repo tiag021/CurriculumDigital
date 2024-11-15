@@ -2,6 +2,7 @@ package curriculumDigital.core;
 
 import blockchain.utils.Block;
 import blockchain.utils.BlockChain;
+import blockchain.utils.MerkleTree;
 import blockchain.utils.ObjectUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -68,13 +69,13 @@ public class CurriculumDigital implements Serializable {
         }
     }
 
-
     /**
-     * 
+     *
      * @param fileName - Pede um ficheiro para carregar
-     * @return Retorna o objet CurriculumDigital com os dados da blockchain e ledger de eventos
+     * @return Retorna o objet CurriculumDigital com os dados da blockchain e
+     * ledger de eventos
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public static CurriculumDigital load(String fileName) throws IOException, ClassNotFoundException {
         try (ObjectInputStream in = new ObjectInputStream(
@@ -94,25 +95,25 @@ public class CurriculumDigital implements Serializable {
         return true;
     }
 
-
     /**
-     * 
+     *
      * @param evento Permite adicionar um evento na blokchain
-     * @throws Exception 
+     * @throws Exception
      */
-    public void addEvent(Evento evento) throws Exception {
+    public void addEvent(Evento evento, String merkleRoot) throws Exception {
         if (isValid(evento)) {
             ledgerEventos.add(evento);
-            blockchain.add(ObjectUtils.convertObjectToBase64(evento), DIFICULDADE);
+            String txtEvent = ObjectUtils.convertObjectToBase64(evento);
+            blockchain.add(txtEvent, DIFICULDADE, merkleRoot);
         } else {
             throw new Exception("Evento não é válido");
         }
     }
 
     /**
-     * 
+     *
      * @return Retorna os eventos presentes nos blocos da blockchain
-     * @throws Exception 
+     * @throws Exception
      */
     public List<Evento> getBlockchainEvents() throws Exception {
         List<Evento> listaEventos = new ArrayList<>();

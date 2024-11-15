@@ -50,13 +50,13 @@ public class BlockChain implements Serializable {
      * @param data data to add in the block
      * @param dificulty dificulty of block to miners (POW)
      */
-    public void add(String data, int dificulty) {
+    public void add(String data, int dificulty, String merkleRoot) {
         //hash of previous block
         String prevHash = getLastBlockHash();
         //mining block
         int nonce = Miner.getNonce(prevHash + data, dificulty);
         //build new block
-        Block newBlock = new Block(prevHash, data, nonce);
+        Block newBlock = new Block(prevHash, data, nonce, merkleRoot);
         //add new block to the chain
         chain.add(newBlock);
     }
