@@ -2,7 +2,7 @@ package curriculumDigital.core;
 
 import blockchain.utils.Block;
 import blockchain.utils.BlockChain;
-import blockchain.utils.MerkleTree;
+import blockchain.utils.BlockChainEventsParallel;
 import blockchain.utils.ObjectUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -112,15 +112,33 @@ public class CurriculumDigital implements Serializable {
 
     /**
      *
-     * @return Retorna os eventos presentes nos blocos da blockchain
+     * @return Retorna os eventos presentes nos blocos da blockchain utilizado
+     * Threads
      * @throws Exception
      */
     public List<Evento> getBlockchainEvents() throws Exception {
+        
+        int cores = Runtime.getRuntime().availableProcessors();
+        // Se houver menos blocos do que cores, o numero de threads criado vai ser o numero de blocos existentes
+        cores = Math.min(cores, blockchain.getChain().size());
+
+        BlockChainEventsParallel[] eventos = new BlockChainEventsParallel[cores];
+        int workLoad = blockchain.getChain().size() / cores;
         List<Evento> listaEventos = new ArrayList<>();
-        for (Block b : blockchain.getChain()) {
-            Evento evento = (Evento) ObjectUtils.convertBase64ToObject(b.getData());
-            listaEventos.add(evento);
+
+        for (int i = 0; i < cores; i++) {
+            int ini = i * workLoad;
+            int fin = ini + workLoad;
+
+            eventos[i] = new BlockChainEventsParallel(blockchain.getChain(), ini, fin);
+            eventos[i].start();
         }
+
+        for (int i = 0; i < cores; i++) {
+            eventos[i].join();
+            listaEventos.addAll(eventos[i].listaEventos);
+        }
+
         return listaEventos;
     }
 

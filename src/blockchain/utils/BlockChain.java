@@ -61,7 +61,7 @@ public class BlockChain implements Serializable {
         int cores = Runtime.getRuntime().availableProcessors();
         int max_nonce = (int) 1E9;
         int nonce = 0;
-        
+
         Miner[] miner = new Miner[cores];
 
         for (int i = 0; i < cores; i++) {
@@ -74,9 +74,13 @@ public class BlockChain implements Serializable {
         // Wait for all miners to finish
         for (int i = 0; i < cores; i++) {
             miner[i].join(); // Aguarda a conclusão de cada minerador
-            miner[i].nonceFound = nonce;
+            //Verificar se o minerador encontrou o nonce
+            if (miner[i].nonceFound != 0) {
+                nonce = miner[i].nonceFound;
+                break;
+            }
         }
-        
+
         //build new block
         Block newBlock = new Block(prevHash, data, nonce, merkleRoot);
         //add new block to the chain
