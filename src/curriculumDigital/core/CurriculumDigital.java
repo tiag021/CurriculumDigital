@@ -1,5 +1,6 @@
 package curriculumDigital.core;
 
+import blockchain.utils.AddEventTask;
 import blockchain.utils.Block;
 import blockchain.utils.BlockChain;
 import blockchain.utils.BlockChainEventsParallel;
@@ -144,7 +145,7 @@ public class CurriculumDigital implements Serializable {
 
     /**
      *
-     * @return Retorna todos os utilizadores guardados no sistema
+     * @return Retorna todos os utilizadores guardados na Ledger
      */
     public List<String> getUsers() {
         ArrayList<String> users = new ArrayList<>();

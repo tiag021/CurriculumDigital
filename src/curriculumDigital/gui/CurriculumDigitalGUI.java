@@ -4,11 +4,14 @@
  */
 package curriculumDigital.gui;
 
+import blockchain.utils.AddEventTask;
+import blockchain.utils.ListUsersTask;
+import blockchain.utils.ShowCurriculumTask;
 import blockchain.utils.MerkleTree;
 import curriculumDigital.core.CurriculumDigital;
 import curriculumDigital.core.Evento;
 import curriculumDigital.core.Utilizador;
-import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -190,7 +193,7 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
                 .addComponent(btnCurriculo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnAcerca, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -198,29 +201,8 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
 
     // Botão mostrar currículo
     private void btnCurriculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCurriculoActionPerformed
-        try {
-            List<Evento> userEvents = new ArrayList<>();
-
-            for (Evento evento : curriculum.getBlockchainEvents()) {
-                if (evento.getUser().equals(myUser.getName())) {
-                    userEvents.add(evento);
-                }
-            }
-
-            if (!userEvents.isEmpty()) {
-                StringBuilder eventsDetails = new StringBuilder();
-                for (Evento evento : userEvents) {
-                    MerkleTree mt = new MerkleTree();
-
-                    eventsDetails.append(evento.toString()).append("\n");
-                }
-                txtCurriculum.setText(eventsDetails.toString());
-            } else {
-                txtCurriculum.setText("Nenhum evento encontrado para " + myUser.getName() + ".");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao buscar eventos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+        // Swing worker para mostrar o curriculo
+        new ShowCurriculumTask(curriculum, myUser, txtCurriculum).execute();
     }//GEN-LAST:event_btnCurriculoActionPerformed
 
     // Botão Registar
@@ -234,7 +216,9 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
                 String eventosConcatenados = String.join(", ", eventosArray);
                 Evento evento = new Evento(eventosConcatenados, myUser);
 
-                curriculum.addEvent(evento, mt.getRoot());
+                //Swing worker para adicionar um evento
+                new AddEventTask(curriculum, evento, mt.getRoot()).execute();
+
                 curriculum.save(fileCurriculumDigital);
 
                 JOptionPane.showMessageDialog(null, "Currículo registrado com sucesso!");
@@ -248,54 +232,8 @@ public class CurriculumDigitalGUI extends javax.swing.JFrame {
 
     // Botão Listar
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
-        try {
-            List<Evento> eventos = curriculum.getBlockchainEvents();
-
-            List<String> userNames = new ArrayList<>();
-
-            // Extrair o userName a partir dos eventos
-            for (Evento evento : eventos) {
-                String nome = evento.getUser();
-                // Prevenir duplicados
-                if (!userNames.contains(nome)) {
-                    userNames.add(nome);
-                }
-            }
-
-            String[] namesArray = userNames.toArray(new String[0]);
-
-            // Mostrar os nomes num popup
-            String selectedName = (String) JOptionPane.showInputDialog(
-                    null,
-                    "Selecione um utilizador:",
-                    "Lista de Utilizadores",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    namesArray,
-                    namesArray[0] // Default selection
-            );
-
-            // Verifica se um userName foi selecionado
-            if (selectedName != null) {
-                // Obtenção dos eventos desse userName
-                StringBuilder eventsDetails = new StringBuilder();
-                for (Evento evento : eventos) {
-                    if (evento.getUser().equals(selectedName)) {
-                        eventsDetails.append(evento.toString()).append("\n");
-                    }
-                }
-
-                if (eventsDetails.length() > 0) {
-                    JOptionPane.showMessageDialog(this, eventsDetails.toString(),
-                            "Eventos de " + selectedName, JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Nenhum evento encontrado para " + selectedName,
-                            "Eventos", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(CurriculumDigitalGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // Swing worker para listar os utilizadores
+        new ListUsersTask(curriculum).execute();
     }//GEN-LAST:event_btnListarActionPerformed
 
     // Botão Acerca de
